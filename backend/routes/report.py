@@ -16,7 +16,8 @@ def format_report(report):
         'image_url': report.image_url,
         'status': report.status,
         'latitude': report.latitude,
-        'longitude': report.longitude
+        'longitude': report.longitude,
+        'category': report.category
     }
 
 # Create a new report
@@ -27,6 +28,7 @@ def create_report():
     date = data.get('date')
     latitude = data.get('latitude')
     longitude = data.get('longitude')
+    category = data.get('category')
 
     image = request.files.get('image')
     image_url = None
@@ -36,7 +38,7 @@ def create_report():
         image.save(filepath)
         image_url = f'/static/uploads/{filename}'
 
-    if not all([description, date, latitude, longitude]):
+    if not all([description, date, latitude, longitude, category]):
         return "Missing required fields", 400
     
     try:
@@ -47,7 +49,8 @@ def create_report():
             date=parsed_date,
             image_url=image_url,
             latitude=float(latitude),
-            longitude=float(longitude)
+            longitude=float(longitude),
+            category=category
         )
 
         db.session.add(new_report)
