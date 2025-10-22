@@ -33,7 +33,7 @@ const ReportForm = ({
       </div>
 
       <div className="form-group">
-        <lable htmlFor="category">Kategoria</lable>
+        <label htmlFor="category">Kategoria</label>
         <select id="category" name="category" defaultValue="">
           <option value="" disabled>
             --Wybierz kategorię

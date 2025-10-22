@@ -7,10 +7,10 @@ const Home = () => {
     <div className="home-view">
       <div className="hero-section">
         <h2>Zgłoś problem w Twojej okolicy</h2>
-        <p>
+        {/* <p>
           Pomóż nam utrzymać miasto w lepszym stanie. Zgłoś dziury w drogach,
           uszkodzone ławki, problemy z oświetleniem i wiele więcej.
-        </p>
+        </p> */}
         <div className="hero-buttons">
           <button
             className="btn btn-primary"
@@ -27,7 +27,7 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="features">
+      {/* <div className="features">
         <div className="feature-card">
           <div className="feature-icon">📍</div>
           <h3>Lokalizacja GPS</h3>
@@ -48,7 +48,7 @@ const Home = () => {
           <h3>Mapa zgłoszeń</h3>
           <p>Zobacz wszystkie zgłoszenia w Twojej okolicy</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

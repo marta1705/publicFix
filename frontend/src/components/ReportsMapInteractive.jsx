@@ -83,7 +83,7 @@ function ReportsMapInteractive({
 }) {
   const getStatusBadge = (status) => {
     const statusMap = {
-      zarejestrowane: { label: "Oczekujące", color: "#FFA500" },
+      Zarejestrowane: { label: "Zarejestrowane", color: "#757575" },
       in_progress: { label: "W trakcie", color: "#2196F3" },
       resolved: { label: "Rozwiązane", color: "#4CAF50" },
     };
@@ -159,27 +159,27 @@ function ReportsMapInteractive({
               click: () => onReportSelect(report),
             }}
           >
-            <Popup>
-              <div style={{ minWidth: "200px" }}>
-                <br />
-                {report.description}
-                <br />
-                <small>📅 {report.date}</small>
-                <br />
-                {report.distance && showNearby && (
-                  <>
-                    <small>
-                      📍{" "}
-                      {report.distance < 1
-                        ? `${Math.round(report.distance * 1000)}m`
-                        : `${report.distance.toFixed(1)}km`}
-                    </small>
-                    <br />
-                  </>
-                )}
-                {getStatusBadge(report.status)}
-              </div>
-            </Popup>
+<Popup>
+  <div style={{ minWidth: "200px", fontSize: "0.9rem", lineHeight: "1.4" }}>
+    <p style={{ margin: "0 0 0.5rem", fontWeight: 500 }}>{report.description}</p>
+
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.25rem" }}>
+      <small style={{ color: "#555" }}>📅 {report.date}</small>
+      {getStatusBadge(report.status)}
+    </div>
+
+    {report.distance && showNearby && (
+      <div style={{ marginTop: "0.5rem" }}>
+        <small style={{ color: "#4CAF50" }}>
+          📍 {report.distance < 1
+            ? `${Math.round(report.distance * 1000)}m`
+            : `${report.distance.toFixed(1)}km`}
+        </small>
+      </div>
+    )}
+  </div>
+</Popup>
+
           </Marker>
         ))}
       </MapContainer>

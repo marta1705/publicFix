@@ -6,7 +6,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-brand">
         <h1>Nazwa aplikacji</h1>
-        <p>Portal zgłoszeń miejskich</p>
+        {/* <p>Portal zgłoszeń miejskich</p> */}
       </div>
       <div className="navbar-links">
         <NavLink
