@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import ReportForm from "../components/ReportForm";
 import MapSelector from "../components/MapSelector";
+import { useAuth } from "./AuthContext";
 
 const baseUrl = "http://localhost:5000";
 
 const AddReport = () => {
+  const { user } = useAuth();
   const [errors, setErrors] = useState({});
   const [markerPosition, setMarkerPosition] = useState([52.2297, 21.0122]);
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [address, setAddress] = useState("");
   const [isLocating, setIsLocating] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   const reverseGeocode = async (lat, lon) => {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
@@ -109,29 +112,36 @@ const AddReport = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    const description = formData.get("description");
-    const date = formData.get("date");
-    const category = formData.get("category");
+    const description = formData.get("description") || "";
+    const date = formData.get("date") || "";
+    const category = formData.get("category") || "";
     formData.set("latitude", latitude);
     formData.set("longitude", longitude);
 
+    // Dodaj user_id jeśli użytkownik jest zalogowany i nie chce być anonimowy
+    if (user && !isAnonymous) {
+      formData.append("user_id", user.id);
+    }
+
     const newErrors = {};
 
-    if (!description.trim()) {
+    // Walidacja z bezpiecznym sprawdzaniem
+    if (!description || !description.trim()) {
       newErrors.description = "Opis jest wymagany!";
     }
-    if (!date.trim()) {
+    if (!date || !date.trim()) {
       newErrors.date = "Data jest wymagana!";
     }
     if (!latitude || !longitude) {
       newErrors.location = "Wybierz lokalizację na mapie!";
     }
-    if (!category.trim()) {
+    if (!category || !category.trim()) {
       newErrors.category = "Kategoria jest wymagana!";
     }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      console.log("Błędy walidacji:", newErrors); // Debug
       return;
     }
 
@@ -181,6 +191,9 @@ const AddReport = () => {
               longitude={longitude}
               onFindMyLocation={handleFindMyLocation}
               isLocating={isLocating}
+              user={user}
+              isAnonymous={isAnonymous}
+              setIsAnonymous={setIsAnonymous}
             />
           </div>
 

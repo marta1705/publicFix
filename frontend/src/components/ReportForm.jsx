@@ -10,6 +10,9 @@ const ReportForm = ({
   longitude,
   onFindMyLocation,
   isLocating,
+  user,
+  isAnonymous,
+  setIsAnonymous,
 }) => {
   return (
     <form onSubmit={onSubmit} className="report-form">
@@ -33,7 +36,7 @@ const ReportForm = ({
       </div>
 
       <div className="form-group">
-        <label htmlFor="category">Kategoria</label>
+        <label htmlFor="category">Kategoria*</label>
         <select id="category" name="category" defaultValue="">
           <option value="" disabled>
             --Wybierz kategorię
@@ -43,6 +46,9 @@ const ReportForm = ({
             Oświetlenie i bezpieczeństwo
           </option>
           <option value="Czystość i środowisko">Czystość i środowisko</option>
+          <option value="Infrastruktura publiczna">
+            Infrastruktura publiczna
+          </option>
           <option value="Inne">Inne</option>
         </select>
         {errors.category && <span className="error">{errors.category}</span>}
@@ -54,6 +60,19 @@ const ReportForm = ({
         <small>Opcjonalnie: dodaj zdjęcie problemu</small>
       </div>
 
+      {user && (
+        <div className="form-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={isAnonymous}
+              onChange={(e) => setIsAnonymous(e.target.checked)}
+            />
+            <span>Dodaj zgłoszenie anonimowo</span>
+          </label>
+        </div>
+      )}
+
       <div className="form-group">
         <label>Lokalizacja*</label>
         <div className="location-actions">
@@ -63,7 +82,7 @@ const ReportForm = ({
             className="btn btn-location"
             disabled={isLocating}
           >
-            {isLocating ? "📍 Lokalizowanie..." : "📍 Znajdź moją lokalizację"}
+            {isLocating ? "Lokalizowanie..." : "Znajdź moją lokalizację"}
           </button>
         </div>
 
@@ -84,12 +103,6 @@ const ReportForm = ({
         </div>
         {errors.address && <span className="error">{errors.address}</span>}
         {errors.location && <span className="error">{errors.location}</span>}
-        {/* {latitude && longitude && (
-          <small className="coordinates">
-            📍 {parseFloat(latitude).toFixed(6)},{" "}
-            {parseFloat(longitude).toFixed(6)}
-          </small>
-        )} */}
       </div>
 
       <button type="submit" className="btn btn-primary btn-submit">

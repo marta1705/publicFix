@@ -140,10 +140,10 @@ function Reports() {
               disabled={isLocating}
             >
               {isLocating
-                ? "📍 Lokalizowanie..."
+                ? "Lokalizowanie..."
                 : showNearby
-                ? "🌍 Pokaż wszystkie"
-                : "📍 Pokaż w mojej okolicy"}
+                ? "Pokaż wszystkie"
+                : "Pokaż w mojej okolicy"}
             </button>
             {/* <button onClick={fetchReports} className="btn btn-secondary">
               🔄 Odśwież

@@ -2,6 +2,7 @@ from flask import Flask
 from .db import db_init
 from .models import Report
 from .routes.report import report
+from .routes.user import user
 import os
 from flask_cors import CORS
 
@@ -14,6 +15,7 @@ CORS(app)
 db_init(app)
 
 app.register_blueprint(report, url_prefix='')
+app.register_blueprint(user)
 
 @app.route('/')
 def hello():

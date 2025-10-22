@@ -17,7 +17,9 @@ def format_report(report):
         'status': report.status,
         'latitude': report.latitude,
         'longitude': report.longitude,
-        'category': report.category
+        'category': report.category,
+        'user_id': report.user_id
+
     }
 
 # Create a new report
@@ -29,6 +31,7 @@ def create_report():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     category = data.get('category')
+    user_id = data.get('user_id')
 
     image = request.files.get('image')
     image_url = None
@@ -50,7 +53,8 @@ def create_report():
             image_url=image_url,
             latitude=float(latitude),
             longitude=float(longitude),
-            category=category
+            category=category,
+            user_id=int(user_id) if user_id else None
         )
 
         db.session.add(new_report)

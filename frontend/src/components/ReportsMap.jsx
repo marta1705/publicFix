@@ -61,7 +61,7 @@ const ReportsMap = ({ reports }) => {
                 <br />
                 {report.description}
                 <br />
-                <small>📅 {report.date}</small>
+                <small>{report.date}</small>
                 <br />
                 {getStatusBadge(report.status)}
               </div>

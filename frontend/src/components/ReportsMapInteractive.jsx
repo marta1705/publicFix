@@ -22,6 +22,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl,
 });
 
+const categoryMap = {
+  "Infrastruktura drogowa": {
+    color: "#e74c3c", // ciepły czerwony (Red 500)
+  },
+  "Oświetlenie i bezpieczeństwo": {
+    color: "#f39c12", // bursztynowy pomarańcz
+  },
+  "Czystość i środowisko": {
+    color: "#27ae60", // głęboka zieleń
+  },
+  "Infrastruktura publiczna": {
+    color: "#3498db", // klasyczny niebieski
+  },
+  "Inne zgłoszenia": {
+    color: "#7f8c8d", // elegancki szary
+  },
+};
+
 const categoryIcons = {
   "Infrastruktura drogowa": L.AwesomeMarkers.icon({
     icon: "road",
@@ -30,7 +48,7 @@ const categoryIcons = {
   }),
   "Oświetlenie i bezpieczeństwo": L.AwesomeMarkers.icon({
     icon: "lightbulb",
-    markerColor: "yellow",
+    markerColor: "orange",
     prefix: "fa",
   }),
   "Czystość i środowisko": L.AwesomeMarkers.icon({
@@ -39,7 +57,7 @@ const categoryIcons = {
     prefix: "fa",
   }),
   "Infrastruktura publiczna": L.AwesomeMarkers.icon({
-    icon: "bench",
+    icon: "building",
     markerColor: "blue",
     prefix: "fa",
   }),
@@ -84,8 +102,9 @@ function ReportsMapInteractive({
   const getStatusBadge = (status) => {
     const statusMap = {
       Zarejestrowane: { label: "Zarejestrowane", color: "#757575" },
-      in_progress: { label: "W trakcie", color: "#2196F3" },
-      resolved: { label: "Rozwiązane", color: "#4CAF50" },
+      Zweryfikowane: { label: "Zweryfikowane - w toku", color: "#2196F3" },
+      Rozwiązane: { label: "Rozwiązane", color: "#4CAF50" },
+      Odrzucone: { label: "Odrzucone", color: "#ef5350" },
     };
     const statusInfo = statusMap[status] || { label: status, color: "#757575" };
     return (
@@ -159,27 +178,54 @@ function ReportsMapInteractive({
               click: () => onReportSelect(report),
             }}
           >
-<Popup>
-  <div style={{ minWidth: "200px", fontSize: "0.9rem", lineHeight: "1.4" }}>
-    <p style={{ margin: "0 0 0.5rem", fontWeight: 500 }}>{report.description}</p>
+            <Popup>
+              <div
+                style={{
+                  minWidth: "200px",
+                  fontSize: "0.9rem",
+                  lineHeight: "1.4",
+                }}
+              >
+                <p style={{ margin: "0 0 0.5rem", fontWeight: 500 }}>
+                  {report.description}
+                </p>
+                <p
+                  style={{
+                    margin: "0 0 0.5rem",
+                    fontSize: "0.8rem",
+                    color:
+                      categoryMap[report.category]?.color ||
+                      categoryMap["Inne zgłoszenia"].color,
+                  }}
+                >
+                  {report.category}
+                </p>
 
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.25rem" }}>
-      <small style={{ color: "#555" }}>📅 {report.date}</small>
-      {getStatusBadge(report.status)}
-    </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: "0.25rem",
+                  }}
+                >
+                  <small style={{ color: "#555" }}>{report.date}</small>
+                  {getStatusBadge(report.status)}
+                </div>
 
-    {report.distance && showNearby && (
-      <div style={{ marginTop: "0.5rem" }}>
-        <small style={{ color: "#4CAF50" }}>
-          📍 {report.distance < 1
-            ? `${Math.round(report.distance * 1000)}m`
-            : `${report.distance.toFixed(1)}km`}
-        </small>
-      </div>
-    )}
-  </div>
-</Popup>
-
+                {report.distance && showNearby && (
+                  <div style={{ marginTop: "0.5rem" }}>
+                    <small style={{ color: "#4CAF50" }}>
+                      {" "}
+                      {report.distance < 1
+                        ? `${Math.round(report.distance * 1000)}m`
+                        : `${report.distance.toFixed(1)}km`}
+                    </small>
+                  </div>
+                )}
+              </div>
+            </Popup>
           </Marker>
         ))}
       </MapContainer>

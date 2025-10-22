@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import noImg from "../static/no-image.png";
 
 const baseUrl = "http://localhost:5000";
 
@@ -13,8 +14,9 @@ function ReportList({
   const getStatusBadge = (status) => {
     const statusMap = {
       Zarejestrowane: { label: "Zarejestrowane", color: "#757575" },
-      in_progress: { label: "W trakcie", color: "#2196F3" },
-      resolved: { label: "Rozwiązane", color: "#4CAF50" },
+      Zweryfikowane: { label: "Zweryfikowane - w toku", color: "#2196F3" },
+      Rozwiązane: { label: "Rozwiązane", color: "#4CAF50" },
+      Odrzucone: { label: "Odrzucone", color: "#ef5350" },
     };
     const statusInfo = statusMap[status] || { label: status, color: "#757575" };
     return (
@@ -30,27 +32,30 @@ function ReportList({
   };
 
   useEffect(() => {
-  const fetchAddresses = async () => {
-    const newAddresses = {};
-    for (const report of reports) {
-      const key = `${report.latitude},${report.longitude}`;
-      if (!addresses[key]) {
-        try {
-          const address = await reverseGeocode(report.latitude, report.longitude);
-          newAddresses[key] = address;
-        } catch (error) {
-          console.error("Błąd geokodowania:", error);
-          newAddresses[key] = "Nieznany adres";
+    const fetchAddresses = async () => {
+      const newAddresses = {};
+      for (const report of reports) {
+        const key = `${report.latitude},${report.longitude}`;
+        if (!addresses[key]) {
+          try {
+            const address = await reverseGeocode(
+              report.latitude,
+              report.longitude
+            );
+            newAddresses[key] = address;
+          } catch (error) {
+            console.error("Błąd geokodowania:", error);
+            newAddresses[key] = "Nieznany adres";
+          }
         }
       }
-    }
-    setAddresses((prev) => ({ ...prev, ...newAddresses }));
-  };
+      setAddresses((prev) => ({ ...prev, ...newAddresses }));
+    };
 
-  fetchAddresses();
-}, [reports]);
+    fetchAddresses();
+  }, [reports]);
 
-    const reverseGeocode = async (lat, lon) => {
+  const reverseGeocode = async (lat, lon) => {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
     const response = await fetch(url);
     const data = await response.json();
@@ -88,8 +93,8 @@ function ReportList({
               <img src={`${baseUrl}${report.image_url}`} alt="Zgłoszenie" />
             </div>
           ) : (
-            <div className="report-thumbnail no-image">
-              <span>📷</span>
+            <div className="report-thumbnail">
+              <img src={noImg} alt="Brak zdjęcia" />
             </div>
           )}
 
@@ -97,19 +102,19 @@ function ReportList({
             <div className="report-top-row">
               {report.distance && showNearby && (
                 <span className="report-distance">
-                  📍 {formatDistance(report.distance)}
+                  {formatDistance(report.distance)}
                 </span>
               )}
             </div>
 
             <p className="report-description-list">{report.description}</p>
             <p className="report-address">
-  🗺️ {addresses[`${report.latitude},${report.longitude}`] || "Ładowanie adresu..."}
-</p>
-
+              {addresses[`${report.latitude},${report.longitude}`] ||
+                "Ładowanie adresu..."}
+            </p>
 
             <div className="report-bottom-row">
-              <span className="report-date">📅 {report.date}</span>
+              <span className="report-date"> {report.date}</span>
               {getStatusBadge(report.status)}
             </div>
           </div>
