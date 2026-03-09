@@ -18,7 +18,8 @@ def format_report(report):
         'latitude': report.latitude,
         'longitude': report.longitude,
         'category': report.category,
-        'user_id': report.user_id
+        'user_id': report.user_id,
+        'source': report.source
 
     }
 
@@ -32,6 +33,7 @@ def create_report():
     longitude = data.get('longitude')
     category = data.get('category')
     user_id = data.get('user_id')
+    source = data.get('source', 'manual')
 
     image = request.files.get('image')
     image_url = None
@@ -54,7 +56,8 @@ def create_report():
             latitude=float(latitude),
             longitude=float(longitude),
             category=category,
-            user_id=int(user_id) if user_id else None
+            user_id=int(user_id) if user_id else None,
+            source=source
         )
 
         db.session.add(new_report)
@@ -118,12 +121,10 @@ def update_report(report_id):
         image = request.files.get('image')
         if image:
             if report.image_url:
-                # Remove the old image file if it exists
                 old_image_path = os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(report.image_url))
                 if os.path.exists(old_image_path):
                     os.remove(old_image_path)
 
-            # Save the new image
             filename = secure_filename(image.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image.save(filepath)
@@ -143,7 +144,6 @@ def delete_report(report_id):
         if not report:
             return "Report not found", 404
         
-        # Remove the image file if it exists
         if report.image_url:
             old_image_path = os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(report.image_url))
             if os.path.exists(old_image_path):

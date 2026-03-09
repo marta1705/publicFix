@@ -11,6 +11,7 @@ import "./App.css";
 import MyReports from "./pages/MyReports";
 import ProtectedRoute from "./ProtectedRoute";
 import { AuthProvider } from "./pages/AuthContext";
+import AdminPanel from "./pages/AdminPanel";
 
 export default function App() {
   return (
@@ -21,7 +22,14 @@ export default function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/dodaj" element={<AddReport />} />
+              <Route
+                path="/dodaj"
+                element={
+                  <ProtectedRoute>
+                    <AddReport />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/zgloszenia" element={<Reports />} />
               <Route path="/logowanie" element={<Login />} />
               <Route path="/rejestracja" element={<Register />} />
@@ -33,6 +41,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/admin" element={<AdminPanel />} />
             </Routes>
           </main>
         </div>

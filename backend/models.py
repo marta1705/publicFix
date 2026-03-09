@@ -11,11 +11,12 @@ class Report(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(100), nullable=False)
+    source = db.Column(db.String(50), nullable=False, default='manual')
 
     def __repr__(self):
         return f'<Report {self.id}>'
 
-    def __init__(self, description, date, image_url, latitude, longitude, category, user_id=None):
+    def __init__(self, description, date, image_url, latitude, longitude, category, user_id, source):
         self.description = description
         self.date = date
         self.image_url = image_url
@@ -23,6 +24,7 @@ class Report(db.Model):
         self.longitude = longitude
         self.category = category
         self.user_id = user_id
+        self.source = source
 
 
 class User(db.Model):

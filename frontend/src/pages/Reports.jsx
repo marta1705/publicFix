@@ -13,7 +13,7 @@ function Reports() {
   const [selectedReport, setSelectedReport] = useState(null);
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of Earth in km
+    const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLon = ((lon2 - lon1) * Math.PI) / 180;
     const a =
@@ -33,7 +33,6 @@ function Reports() {
       const data = await response.json();
       let reportsData = data.reports || [];
 
-      // Calculate distance for each report if user location is available
       if (userLocation) {
         reportsData = reportsData.map((report) => ({
           ...report,
@@ -41,16 +40,18 @@ function Reports() {
             userLocation.latitude,
             userLocation.longitude,
             report.latitude,
-            report.longitude
+            report.longitude,
           ),
         }));
 
-        // Sort by distance if showNearby is enabled
         if (showNearby) {
           reportsData.sort((a, b) => a.distance - b.distance);
         }
       }
 
+      reportsData = reportsData.filter(
+        (report) => report.status !== "Oczekujące",
+      );
       setReports(reportsData);
     } catch (error) {
       console.error("Error fetching reports:", error);
@@ -58,8 +59,6 @@ function Reports() {
       setLoading(false);
     }
   };
-
-  console.log("User Location:", reports);
 
   const handleFindMyLocation = () => {
     if (!navigator.geolocation) {
@@ -103,7 +102,7 @@ function Reports() {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 0,
-      }
+      },
     );
   };
 
@@ -120,10 +119,9 @@ function Reports() {
     fetchReports();
   }, [userLocation, showNearby]);
 
-  // Filter reports for map (show nearby if enabled)
   const mapReports =
     showNearby && userLocation
-      ? reports.filter((r) => r.distance && r.distance <= 5) // 5km radius
+      ? reports.filter((r) => r.distance && r.distance <= 5)
       : reports;
 
   return (
@@ -142,8 +140,8 @@ function Reports() {
               {isLocating
                 ? "Lokalizowanie..."
                 : showNearby
-                ? "Pokaż wszystkie"
-                : "Pokaż w mojej okolicy"}
+                  ? "Pokaż wszystkie"
+                  : "Pokaż w mojej okolicy"}
             </button>
             {/* <button onClick={fetchReports} className="btn btn-secondary">
               🔄 Odśwież

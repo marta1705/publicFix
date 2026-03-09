@@ -29,12 +29,10 @@ def register():
         if not all([email, password, first_name]):
             return jsonify({"error": "Wszystkie pola są wymagane"}), 400
 
-        # Sprawdź czy użytkownik już istnieje
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return jsonify({"error": "Użytkownik o tym adresie email już istnieje"}), 409
 
-        # Utwórz nowego użytkownika
         new_user = User(
             email=email,
             password=password,
@@ -44,7 +42,6 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        # Wygeneruj token JWT
         token = jwt.encode(
             {
                 'user_id': new_user.id,
@@ -81,7 +78,6 @@ def login():
         if not user or not user.check_password(password):
             return jsonify({"error": "Nieprawidłowy email lub hasło"}), 401
 
-        # Wygeneruj token JWT
         token = jwt.encode(
             {
                 'user_id': user.id,
