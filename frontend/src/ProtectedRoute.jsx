@@ -1,5 +1,5 @@
-import { Navigate } from "react-router-dom";
-import { useAuth } from "./pages/AuthContext";
+import { Navigate, redirect, useLocation } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import "./spinner.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -13,11 +13,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
+  return user ? children : <Navigate to="/logowanie" />;
 };
 
 export default ProtectedRoute;

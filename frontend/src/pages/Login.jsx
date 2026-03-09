@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,27 +13,31 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!email.trim()) {
+      setError("Podaj email");
+      return;
+    }
+
+    if (!password) {
+      setError("Podaj hasło");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const result = await login(email, password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        login(data.token, data.user);
+      if (result.success) {
+        console.log("Zalogowano jako:", result.user.email);
         navigate("/");
       } else {
-        setError(data.error || "Błąd logowania");
+        setError(result.error);
       }
-    } catch (error) {
-      setError("Błąd połączenia z serwerem");
+    } catch (err) {
+      console.error("Nieoczekiwany błąd:", err);
+      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie");
     } finally {
       setLoading(false);
     }

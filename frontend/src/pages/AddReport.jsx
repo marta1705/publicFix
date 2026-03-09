@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import ReportForm from "../components/ReportForm";
 import MapSelector from "../components/MapSelector";
-import { useAuth } from "./AuthContext";
-
-const baseUrl = "http://localhost:5000";
+import { useAuth } from "../AuthContext";
+import api from "../services/api";
 
 const AddReport = () => {
   const { user } = useAuth();
@@ -25,7 +24,7 @@ const AddReport = () => {
   const handleGeocode = () => {
     if (address.trim()) {
       fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${address}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${address}`,
       )
         .then((response) => response.json())
         .then((data) => {
@@ -104,12 +103,17 @@ const AddReport = () => {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 0,
-      }
+      },
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      alert("Musisz być zalogowany, aby dodać zgłoszenie");
+      return;
+    }
+
     const formData = new FormData(e.target);
 
     const description = formData.get("description") || "";
@@ -117,11 +121,6 @@ const AddReport = () => {
     const category = formData.get("category") || "";
     formData.set("latitude", latitude);
     formData.set("longitude", longitude);
-
-    // Dodaj user_id jeśli użytkownik jest zalogowany i nie chce być anonimowy
-    if (user && !isAnonymous) {
-      formData.append("user_id", user.id);
-    }
 
     const newErrors = {};
 
@@ -132,7 +131,7 @@ const AddReport = () => {
     if (!date || !date.trim()) {
       newErrors.date = "Data jest wymagana!";
     }
-    if (!latitude || !longitude) {
+    if (latitude === "" || longitude === "") {
       newErrors.location = "Wybierz lokalizację na mapie!";
     }
     if (!category || !category.trim()) {
@@ -147,26 +146,31 @@ const AddReport = () => {
 
     setErrors({});
 
-    fetch(`${baseUrl}/report`, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert("Zgłoszenie zostało dodane!");
-          e.target.reset();
-          setLatitude("");
-          setLongitude("");
-          setAddress("");
-          setMarkerPosition([52.2297, 21.0122]);
-        } else {
-          alert("Wystąpił błąd podczas dodawania zgłoszenia.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Wystąpił błąd podczas dodawania zgłoszenia.");
+    try {
+      const response = await api.post("/report", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+      alert("Zgłoszenie zostało dodane");
+      e.target.reset();
+      setLatitude("");
+      setLongitude("");
+      setAddress("");
+      setMarkerPosition([52.2297, 21.0122]);
+    } catch (error) {
+      let message = "Wystąpił błąd podczas dodawania zgłoszenia.";
+
+      if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.response?.status === 401) {
+        message = "Sesja wygasła. Zaloguj się ponownie.";
+      } else if (error.response?.status === 413) {
+        message = "Plik jest za duży (maks. 16 MB).";
+      }
+
+      alert(message);
+    }
   };
 
   useEffect(() => {
@@ -179,6 +183,12 @@ const AddReport = () => {
     <div className="add-view">
       <div className="form-container-unified">
         <h2>Dodaj nowe zgłoszenie</h2>
+        {!user && (
+          <div className="alert alert-warning">
+            ⚠️ Musisz być zalogowany aby dodać zgłoszenie
+          </div>
+        )}
+
         <div className="form-map-grid">
           <div className="form-section">
             <ReportForm

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 import noImg from "../static/no-image.png";
+import api from "../services/api";
 
 const baseUrl = "http://localhost:5000";
 
@@ -21,22 +22,17 @@ const MyReports = () => {
 
   const fetchMyReports = async () => {
     try {
-      const response = await fetch(`${baseUrl}/report`);
-      const data = await response.json();
-
-      // Filtruj zgłoszenia należące do zalogowanego użytkownika
-      const myReports = data.reports.filter(
-        (report) => report.user_id === user.id
-      );
+      const response = await api.get("/report/my");
+      const myReports = response.data.reports || [];
 
       const reportsWithAddresses = await Promise.all(
         myReports.map(async (report) => {
           const address = await reverseGeocode(
             report.latitude,
-            report.longitude
+            report.longitude,
           );
           return { ...report, address };
-        })
+        }),
       );
 
       setReports(reportsWithAddresses);
@@ -71,19 +67,24 @@ const MyReports = () => {
     }
 
     try {
-      const response = await fetch(`${baseUrl}/report/${reportId}`, {
-        method: "DELETE",
-      });
+      await api.delete(`/report/${reportId}`);
 
-      if (response.ok) {
-        alert("Zgłoszenie zostało usunięte");
-        fetchMyReports(); // Odśwież listę
-      } else {
-        alert("Błąd podczas usuwania zgłoszenia");
-      }
+      alert("Zgłoszenie zostało usunięte");
+      fetchMyReports(); // Odśwież listę
     } catch (error) {
       console.error("Błąd:", error);
-      alert("Błąd podczas usuwania zgłoszenia");
+
+      let message = "Błąd podczas usuwania zgłoszenia";
+
+      if (error.response?.status === 403) {
+        message = "Nie masz uprawnień do usunięcia tego zgłoszenia";
+      } else if (error.response?.status === 404) {
+        message = "Zgłoszenie nie zostało znalezione";
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      }
+
+      alert(message);
     }
   };
 
@@ -164,12 +165,12 @@ const MyReports = () => {
                   >
                     Zobacz na mapie
                   </button> */}
-                  {/* <button
+                  <button
                     className="btn btn-danger btn-sm"
                     onClick={() => handleDelete(report.id)}
                   >
                     Usuń
-                  </button> */}
+                  </button>
                 </div>
               </div>
             ))}

@@ -60,7 +60,7 @@ const ReportForm = ({
         <small>Opcjonalnie: dodaj zdjęcie problemu</small>
       </div>
 
-      {user && (
+      {/* {user && (
         <div className="form-group">
           <label className="checkbox-label">
             <input
@@ -71,7 +71,7 @@ const ReportForm = ({
             <span>Dodaj zgłoszenie anonimowo</span>
           </label>
         </div>
-      )}
+      )} */}
 
       <div className="form-group">
         <label>Lokalizacja*</label>

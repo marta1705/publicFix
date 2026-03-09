@@ -307,7 +307,9 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .feature-card:hover {
@@ -856,7 +858,9 @@ select:focus {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
 }
@@ -1091,4 +1095,22 @@ select:focus {
 
 .reports-list::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Podświetlanie błędnych pól */
+.input-error {
+  border-color: #dc3545 !important;
+}
+
+.input-error:focus {
+  border-color: #c82333 !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
+
+/* Małe komunikaty błędów pod polami */
+.form-group small.error {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
 }

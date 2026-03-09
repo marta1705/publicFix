@@ -1,9 +1,21 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { useAuth } from "../pages/AuthContext";
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+  useNavigation,
+} from "react-router-dom";
+import { useAuth } from "../AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/logowanie");
+  };
 
   return (
     <nav className="navbar">
@@ -19,14 +31,17 @@ const Navbar = () => {
         >
           Strona główna
         </NavLink>
-        <NavLink
-          to="/dodaj"
-          className={({ isActive }) =>
-            isActive ? "nav-link active" : "nav-link"
-          }
-        >
-          Dodaj zgłoszenie
-        </NavLink>
+        {isAuthenticated && (
+          <NavLink
+            to="/dodaj"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Dodaj zgłoszenie
+          </NavLink>
+        )}
+
         <NavLink
           to="/zgloszenia"
           className={({ isActive }) =>
@@ -52,7 +67,7 @@ const Navbar = () => {
             <span className="user-name">
               {user.first_name} {user.last_name}
             </span>
-            <button onClick={logout} className="btn-logout">
+            <button onClick={handleLogout} className="btn-logout">
               Wyloguj
             </button>
           </div>

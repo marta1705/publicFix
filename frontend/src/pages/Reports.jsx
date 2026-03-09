@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import ReportList from "../components/ReportList";
 import ReportsMapInteractive from "../components/ReportsMapInteractive";
+import api from "../services/api";
 
 const baseUrl = "http://localhost:5000";
 
@@ -29,9 +30,8 @@ function Reports() {
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${baseUrl}/report`);
-      const data = await response.json();
-      let reportsData = data.reports || [];
+      const response = await api.get("/report");
+      let reportsData = response.data.reports || [];
 
       // Calculate distance for each report if user location is available
       if (userLocation) {
@@ -41,7 +41,7 @@ function Reports() {
             userLocation.latitude,
             userLocation.longitude,
             report.latitude,
-            report.longitude
+            report.longitude,
           ),
         }));
 
@@ -54,6 +54,12 @@ function Reports() {
       setReports(reportsData);
     } catch (error) {
       console.error("Error fetching reports:", error);
+
+      if (error.response?.status === 401) {
+        console.log("Niezalogowany - to OK dla publicznych zgłoszeń");
+      } else {
+        alert("Błąd podczas pobierania zgłoszeń");
+      }
     } finally {
       setLoading(false);
     }
@@ -103,7 +109,7 @@ function Reports() {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 0,
-      }
+      },
     );
   };
 
@@ -142,8 +148,8 @@ function Reports() {
               {isLocating
                 ? "Lokalizowanie..."
                 : showNearby
-                ? "Pokaż wszystkie"
-                : "Pokaż w mojej okolicy"}
+                  ? "Pokaż wszystkie"
+                  : "Pokaż w mojej okolicy"}
             </button>
             {/* <button onClick={fetchReports} className="btn btn-secondary">
               🔄 Odśwież
